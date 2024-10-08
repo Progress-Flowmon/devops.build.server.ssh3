@@ -61,7 +61,7 @@ func (i *OpenIDConnectIdentity) Verify(genericCandidate interface{}, base64Conve
 			return false
 		}
 
-		valid := token != nil && claims.EmailVerified && claims.Email == i.email
+		valid := token != nil && claims.Email == i.email // && claims.EmailVerified mail cannot be verified in our user management scheme
 
 		if !valid {
 			log.Error().Msgf("invalid token: email should be: %s received claims: %+v", i.email, claims)
