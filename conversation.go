@@ -22,6 +22,18 @@ const SSH_FRAME_TYPE = 0xaf3627e6
 
 type ConversationID [32]byte
 
+type quicDatagramSender struct {
+	quic.Connection
+}
+
+func (s quicDatagramSender) SendDatagram(p []byte) error {
+	return s.Connection.SendMessage(p)
+}
+
+func NewQUICDatagramSender(conn quic.Connection) util.DatagramSender {
+	return quicDatagramSender{Connection: conn}
+}
+
 func (cid ConversationID) String() string {
 	return base64.StdEncoding.EncodeToString(cid[:])
 }
@@ -181,14 +193,14 @@ func (c *Conversation) EstablishClientConversation(req *http.Request, roundTripp
 		c.controlStream = rsp.Body.(http3.HTTPStreamer).HTTPStream()
 		c.streamCreator = rsp.Body.(http3.Hijacker).StreamCreator()
 		qconn := c.streamCreator.(quic.Connection)
-		c.messageSender = qconn
+		c.messageSender = NewQUICDatagramSender(qconn)
 		c.context, c.cancelContext = context.WithCancelCause(qconn.Context())
 		go func() {
 			// TODO: this hijacks the datagrams for the whole quic connection, so the server
 			//		 currently does not work for several conversations in the same QUIC connection
 
 			for {
-				dgram, err := qconn.ReceiveDatagram(c.Context())
+				dgram, err := qconn.ReceiveMessage(c.Context())
 				if err != nil {
 					if err != context.Canceled {
 						log.Error().Msgf("could not receive message from conn: %s", err)

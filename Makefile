@@ -5,6 +5,8 @@ GO_OPTS?=CGO_ENABLED=$(CGO_ENABLED) GOOS=$(GOOS)
 GO_TAGS?=
 TEST_OPTS?=GOOS=$(GOOS) GOARCH=$(GOARCH)
 
+.PHONY: lint test integration-tests install build client server
+
 lint:
 	go fmt ./...
 	# FIXME: fix vet errors before turning this on
@@ -35,7 +37,7 @@ install:
 build: client server
 
 client:
-	$(GO_OPTS) go build -tags "$(GO_TAGS)" $(BUILD_FLAGS) -o bin/client ./cmd/ssh3/
+	$(GO_OPTS) go build -tags "$(GO_TAGS)" $(BUILDFLAGS) -o bin/client ./cmd/ssh3/
 
 server:
-	$(GO_OPTS) go build -tags "$(GO_TAGS)" $(BUILD_FLAGS) -o bin/server ./cmd/ssh3-server/
+	$(GO_OPTS) go build -tags "$(GO_TAGS)" $(BUILDFLAGS) -o bin/server ./cmd/ssh3-server/
