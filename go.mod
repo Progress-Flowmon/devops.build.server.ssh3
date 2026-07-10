@@ -11,7 +11,7 @@ require (
 	github.com/quic-go/quic-go v0.38.1
 	github.com/rs/zerolog v1.31.0
 	go.uber.org/zap v1.24.0
-	golang.org/x/crypto v0.51.0
+	golang.org/x/crypto v0.52.0
 	golang.org/x/exp v0.0.0-20221205204356-47842c84f3db
 	golang.org/x/oauth2 v0.27.0
 	golang.org/x/term v0.43.0
